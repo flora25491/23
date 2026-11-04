@@ -1,0 +1,32 @@
+{
+  "name": "stalcraft-buy",
+  "version": "1.0.0",
+  "description": "STALCRAFT BUY — локальный помощник для учёта сделок и расчёта цен",
+  "main": "main.js",
+  "author": "STALCRAFT BUY",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis portable"
+  },
+  "devDependencies": {
+    "electron": "^39.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "ru.stalcraft.buy",
+    "productName": "STALCRAFT BUY",
+    "directories": { "output": "dist" },
+    "files": ["index.html", "main.js", "preload.js", "package.json"],
+    "win": {
+      "target": ["nsis", "portable"],
+      "artifactName": "STALCRAFT-BUY-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}

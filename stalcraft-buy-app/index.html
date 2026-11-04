@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>STALCRAFT BUY</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--bg:#14091f;--panel:#1f1238;--field:#2d1b52;--side:#0c0517;--edge:#3d2478;--acc:#8b3dff;--acc2:#b27cff;--dim:#9a86c4;--good:#4be38a;--bad:#ff5c7a;--fg:#efe6ff}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--fg);font:14px "Segoe UI",system-ui,sans-serif;display:flex;height:100vh;overflow:hidden}
+aside{width:230px;background:var(--side);padding-top:22px;flex-shrink:0;display:flex;flex-direction:column}
+.l1{font-size:20px;font-weight:700;color:#fff;margin-left:20px}.l2{font-size:30px;font-weight:700;color:var(--acc2);margin-left:20px;line-height:1.1}
+.l3{font-size:9px;color:var(--dim);margin:2px 0 22px 22px}
+.nav{display:flex;align-items:center;height:44px;font-weight:700;color:var(--dim);cursor:pointer;border-left:4px solid transparent;padding-left:12px;gap:10px;transition:.15s}
+.nav:hover{background:#25153f;color:#fff}.nav.on{background:var(--field);color:#fff;border-left-color:var(--acc2)}
+.ver{margin-top:auto;text-align:center;font-size:10px;color:var(--dim);padding:12px}
+main{flex:1;display:flex;flex-direction:column;min-width:0}
+.banner{height:84px;background:linear-gradient(90deg,#4a1a99,var(--bg));padding:18px 26px;flex-shrink:0}
+.banner h1{font-size:24px;color:#fff}.banner p{color:#d9c4ff;font-size:13px;margin-top:5px}
+.page{display:none;padding:22px 24px;overflow:auto;flex:1}.page.on{display:block}
+.note{color:var(--dim);margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--edge);padding:22px 28px;display:inline-block;min-width:460px;max-width:100%}
+.card h3{color:var(--acc2);font-size:16px;margin-bottom:10px}
+.r{display:flex;align-items:center;gap:12px;margin:9px 0;flex-wrap:wrap}.r label{width:190px;color:var(--dim)}
+input,select,textarea{background:var(--field);border:1px solid var(--field);color:var(--fg);padding:7px 10px;font:inherit;font-size:15px;outline:none;width:180px}
+input:focus,select:focus,textarea:focus{border-color:var(--acc)}
+.w2{width:120px}.w3{width:90px}
+button{background:var(--acc);color:#fff;font:inherit;font-weight:700;font-size:13px;padding:9px 17px;border:0;border-radius:12px;cursor:pointer;margin:4px 8px 4px 0;transition:.15s}
+button:hover{background:var(--acc2)}button.g{background:var(--field)}button.g:hover{background:var(--edge)}
+.out{font-weight:700;font-size:16px;line-height:1.7;margin:12px 0}
+.good{color:var(--good)}.bad{color:var(--bad)}
+.big{font-size:24px;font-weight:700;color:var(--good);margin:12px 0}
+table{width:100%;border-collapse:collapse;background:var(--panel);margin-top:14px}
+th{background:var(--field);color:var(--acc2);text-align:left;padding:8px 10px;font-size:12px}
+td{padding:7px 10px;font-size:13px;border-top:1px solid #281846}
+tr.sel td{background:var(--acc)}tbody tr.pick{cursor:pointer}
+.sum{color:var(--acc2);font-weight:700;font-size:16px}
+textarea{width:100%;height:170px;font-size:15px;resize:vertical}
+#log{background:var(--panel);padding:16px;height:55vh;overflow:auto;line-height:1.5;white-space:pre-wrap}
+.me{color:var(--acc2)}
+</style></head><body>
+<aside><div class="l1">STALCRAFT</div><div class="l2">BUY</div><div class="l3">ALL-IN-ONE ASSISTANT · RU</div><div id="nav"></div><div class="ver">v1.0 · работает в браузере</div></aside>
+<main><div class="banner"><h1 id="t"></h1><p id="s"></p></div>
+
+<section class="page" id="Калькулятор"><div class="card"><h3>Калькулятор перекупа</h3>
+<div class="r"><label>Предмет</label><input id="c-item"></div>
+<div class="r"><label>Цена покупки за 1 шт.</label><input id="c-buy" type="number"></div>
+<div class="r"><label>Количество</label><input id="c-qty" type="number" value="10"></div>
+<div class="r"><label>Цена продажи за 1 шт.</label><input id="c-sell" type="number" value="2000"></div>
+<div class="r"><label>Комиссия продажи, %</label><input id="c-fee" type="number" value="0"></div>
+<div class="out" id="c-out"></div>
+<button onclick="calcRec('Покупка')">Записать: купил</button><button class="g" onclick="calcRec('Продажа')">Записать: продал</button><button class="g" onclick="calcSave()">Сохранить цену</button></div></section>
+
+<section class="page" id="Trader Bot"><div class="note">Игрок кинул отряд — введи ник и сколько он принёс.</div>
+<div class="r"><span class="note">Ник</span><input id="t-nick"><span class="note">Кол-во</span><input id="t-qty" class="w3" type="number" value="1"><span class="note">Цена за 1</span><input id="t-price" class="w2" type="number"></div>
+<div class="big" id="t-total"></div><button onclick="tConfirm()">Выплатил (записать сделку)</button><button class="g" onclick="copy(String(num('t-qty')*num('t-price')))">Копировать сумму</button>
+<table><thead><tr><th>Время</th><th>Тип</th><th>Ник</th><th>Предмет</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody id="t-tab"></tbody></table></section>
+
+<section class="page" id="AutoBuy"><div class="note">Задай максимальную цену, выбери предмет в списке, введи цену лота — программа скажет, брать или нет. Покупаешь ты сам в игре.</div>
+<div class="r"><span class="note">Предмет</span><input id="w-item"><span class="note">Макс. цена</span><input id="w-max" class="w2" type="number"><button onclick="wAdd()">В список</button><button class="g" onclick="wDel()">Удалить</button></div>
+<table style="max-width:460px"><thead><tr><th>Предмет</th><th>Макс. цена</th></tr></thead><tbody id="w-tab"></tbody></table>
+<div class="r" style="margin-top:16px"><span class="note">Цена лота</span><input id="w-lot" class="w2" type="number"><button onclick="wCheck()">Проверить</button><b id="w-res"></b></div></section>
+
+<section class="page" id="Анализ рынка"><div class="note">Записывай цены, которые видишь на аукционе.</div>
+<div class="r"><span class="note">Предмет</span><input id="m-item"><span class="note">Цена</span><input id="m-price" class="w2" type="number"><button onclick="mAdd()">Записать цену</button></div>
+<div class="r"><span class="note">Желаемая маржа, %</span><input id="m-margin" class="w3" type="number" value="10"></div>
+<div class="out" id="m-out"></div></section>
+
+<section class="page" id="Реклама"><div class="r"><span class="note">Тип</span><select id="a-mode" class="w2"><option>Куплю</option><option>Продам</option></select></div>
+<div class="r"><label>Предмет</label><input id="a-item"></div><div class="r"><label>Цена за 1</label><input id="a-price" type="number"></div><div class="r"><label>Ник (необязательно)</label><input id="a-nick"></div>
+<button onclick="aGen()">Сгенерировать</button><textarea id="a-text"></textarea><button onclick="copy($('a-text').value)">Копировать (вставишь в чат сам)</button></section>
+
+<section class="page" id="AI Agent"><div id="log"></div><div class="r"><input id="ag" style="flex:1;width:auto" placeholder="Напиши команду…" onkeydown="if(event.key=='Enter')agSend()"><button onclick="agSend()">Отправить</button></div></section>
+
+<section class="page" id="История"><div class="sum" id="h-sum"></div>
+<table><thead><tr><th>Время</th><th>Тип</th><th>Ник</th><th>Предмет</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><th></th></tr></thead><tbody id="h-tab"></tbody></table>
+<div style="margin-top:14px"><button onclick="exportCsv()">Экспорт в CSV</button><button class="g" onclick="if(confirm('Удалить всю историю?')){D.deals=[];save();render()}">Очистить всё</button></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id),num=id=>parseFloat($(id).value)||0;
+const NAV=[["Калькулятор","🧮","Расчёт стоимости и прибыли"],["Trader Bot","🤖","Приём сдачи, сделки и покупатели"],["AutoBuy","🛒","Список слежения за лотами"],["Анализ рынка","📈","Средние цены и рекомендуемая цена покупки"],["Реклама","📢","Тексты для игрового чата"],["AI Agent","✨","Помощник по командам"],["История","🕘","Все покупки и продажи"]];
+const money=n=>Math.round(n).toLocaleString("ru-RU")+" ₽";
+let D={deals:[],watch:[],prices:[],s:{price:1700,item:"Прото-артефакт",fee:0}},wsel=-1;
+try{D=Object.assign(D,JSON.parse(localStorage.getItem("sb")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("sb",JSON.stringify(D))}catch(e){}};
+function show(n){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("on",p.id==n));
+ document.querySelectorAll(".nav").forEach(e=>e.classList.toggle("on",e.dataset.n==n));
+ const c=NAV.find(x=>x[0]==n);$("t").textContent=c[1]+"  "+n;$("s").textContent=c[2];}
+$("nav").innerHTML=NAV.map(n=>`<div class="nav" data-n="${n[0]}" onclick="show('${n[0]}')"><span>${n[1]}</span>${n[0]}</div>`).join("");
+function copy(t){if(window.stalcraftClipboard){window.stalcraftClipboard.writeText(t);return}if(navigator.clipboard)navigator.clipboard.writeText(t).catch(()=>alert('Не удалось скопировать текст'))}
+function addDeal(type,nick,qty,price){D.deals.push({time:new Date().toLocaleString("ru-RU").slice(0,16),type,nick,item:D.s.item,qty,price,total:qty*price});save();render()}
+function calc(){const b=num("c-buy"),q=num("c-qty"),s=num("c-sell"),f=num("c-fee"),pay=b*q,rev=s*q*(1-f/100),pr=rev-pay;
+ $("c-out").className="out "+(pr>=0?"good":"bad");$("c-out").innerHTML=`К оплате продавцу: ${money(pay)}<br>Выручка с продажи: ${money(rev)}<br>Профит: ${money(pr)}`}
+function calcRec(t){const q=num("c-qty");if(q<=0)return alert("Укажи количество");D.s.item=$("c-item").value;addDeal(t,"—",q,num(t=="Покупка"?"c-buy":"c-sell"))}
+function calcSave(){D.s={item:$("c-item").value,price:num("c-buy"),fee:num("c-fee")};save();setPrice()}
+function setPrice(){$("t-price").value=D.s.price;$("a-price").value=D.s.price;$("a-item").value=D.s.item;$("m-item").value=D.s.item;$("c-buy").value=D.s.price;$("c-item").value=D.s.item;$("c-fee").value=D.s.fee;calc();tTot();aGen()}
+function tTot(){$("t-total").textContent="Заплатить: "+money(num("t-qty")*num("t-price"))}
+function tConfirm(){const n=$("t-nick").value.trim(),q=num("t-qty");if(!n||q<=0)return alert("Укажи ник и количество");addDeal("Покупка",n,q,num("t-price"));$("t-nick").value="";$("t-qty").value=1;tTot()}
+const row=d=>`<td>${d.time}</td><td>${d.type}</td><td>${d.nick}</td><td>${d.item}</td><td>${d.qty}</td><td>${money(d.price)}</td><td>${money(d.total)}</td>`;
+function wAdd(){const i=$("w-item").value.trim(),m=num("w-max");if(i&&m>0){D.watch.push({item:i,max:m});save();$("w-item").value="";$("w-max").value="";render()}}
+function wDel(){if(wsel>=0){D.watch.splice(wsel,1);wsel=-1;save();render()}}
+function wCheck(){const w=D.watch[wsel],l=num("w-lot"),r=$("w-res");if(!w){r.textContent="Выбери предмет";r.className="";return}if(l<=0)return;
+ if(l<=w.max){r.className="good";r.textContent=`ВЫГОДНО (на ${money(w.max-l)} ниже лимита)`}else{r.className="bad";r.textContent=`ДОРОГО (на ${money(l-w.max)} выше лимита)`}}
+function mAdd(){const i=$("m-item").value.trim(),p=num("m-price");if(i&&p>0){D.prices.push({item:i,price:p});save();$("m-price").value="";mShow()}}
+function mShow(){const ps=D.prices.filter(p=>p.item.toLowerCase()==$("m-item").value.trim().toLowerCase()).slice(-30).map(p=>p.price),o=$("m-out");
+ if(!ps.length){o.innerHTML="Нет данных по этому предмету.";return}const avg=ps.reduce((a,b)=>a+b)/ps.length,m=num("m-margin");
+ o.innerHTML=`Замеров: ${ps.length}<br>Мин: ${money(Math.min(...ps))}   Макс: ${money(Math.max(...ps))}<br>Средняя: ${money(avg)}<br><span class="good">Брать не дороже: ${money(avg/(1+m/100))} (маржа ${m}%)</span>`}
+function aGen(){const m=$("a-mode").value,i=$("a-item").value,p=Math.round(num("a-price")).toLocaleString("ru-RU"),n=$("a-nick").value.trim();
+ const tail=m=="Куплю"?` Кидай отряд${n?" к "+n:""}, плачу сразу.`:` Пиши${n?" "+n:" в ЛС"}.`;
+ $("a-text").value=[`${m} ${i} по ${p}.${tail}`,`${m.toUpperCase()} ${i} — ${p} за шт.!${tail}`,`[${m}] ${i} | ${p} руб/шт |${tail}`].join("\n\n")}
+function say(t,c){const l=$("log");l.innerHTML+=`<div class="${c}">${c=="me"?"Ты":"Агент"}: ${t}</div><br>`;l.scrollTop=l.scrollHeight}
+function agSend(){const q=$("ag").value.trim();if(!q)return;$("ag").value="";say(q,"me");const lo=q.toLowerCase(),ns=(q.match(/\d+([.,]\d+)?/g)||[]).map(x=>parseFloat(x.replace(",",".")));
+ const go=(n)=>{show(n);say("Открыл «"+n+"».","bot")};
+ if(lo.startsWith("посчитай")&&ns.length>=2)say(`${ns[0]} × ${money(ns[1])} = ${money(ns[0]*ns[1])}`,"bot");
+ else if(lo.startsWith("цена")&&ns.length){D.s.price=ns[0];save();setPrice();say("Цена покупки теперь "+money(ns[0]),"bot")}
+ else if(/профит|прибыл/.test(lo)){const f=t=>D.deals.filter(d=>d.type==t).reduce((a,d)=>a+d.total,0);say(`Потрачено ${money(f("Покупка"))}, получено ${money(f("Продажа"))}, профит ${money(f("Продажа")-f("Покупка"))}.`,"bot")}
+ else if(lo.includes("сколько сделок"))say("Сделок в истории: "+D.deals.length,"bot");
+ else if(lo.includes("реклам")){aGen();go("Реклама")}
+ else if(lo.includes("истор"))go("История");else if(lo.includes("калькул"))go("Калькулятор");else if(lo.includes("рын"))go("Анализ рынка");
+ else if(lo.includes("авто"))go("AutoBuy");else if(lo.includes("трейд"))go("Trader Bot");
+ else say("Не понял. Напиши, например: «посчитай 10 по 1700».","bot")}
+function exportCsv(){const r=[["Время","Тип","Ник","Предмет","Кол-во","Цена","Сумма"],...D.deals.map(d=>[d.time,d.type,d.nick,d.item,d.qty,d.price,d.total])];
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+r.map(x=>x.join(";")).join("\n")],{type:"text/csv"}));a.download="stalcraft_history.csv";a.click()}
+function render(){const rv=[...D.deals].map((d,i)=>[d,i]).reverse(),f=t=>D.deals.filter(d=>d.type==t).reduce((a,d)=>a+d.total,0);
+ $("t-tab").innerHTML=rv.slice(0,30).map(([d])=>`<tr>${row(d)}</tr>`).join("");
+ $("h-tab").innerHTML=rv.map(([d,i])=>`<tr>${row(d)}<td><button class="g" style="padding:3px 10px;margin:0" onclick="D.deals.splice(${i},1);save();render()">✕</button></td></tr>`).join("");
+ $("h-sum").textContent=`Потрачено: ${money(f("Покупка"))}    Получено: ${money(f("Продажа"))}    Профит: ${money(f("Продажа")-f("Покупка"))}`;
+ $("w-tab").innerHTML=D.watch.map((w,i)=>`<tr class="pick ${i==wsel?"sel":""}" onclick="wsel=${i};render()"><td>${w.item}</td><td>${money(w.max)}</td></tr>`).join("");mShow()}
+["c-buy","c-qty","c-sell","c-fee"].forEach(i=>$(i).oninput=calc);["t-qty","t-price"].forEach(i=>$(i).oninput=tTot);
+["a-mode","a-item","a-price","a-nick"].forEach(i=>$(i).oninput=aGen);["m-item","m-margin"].forEach(i=>$(i).oninput=mShow);
+say("Я локальный помощник. Команды: «посчитай 10 по 1700», «цена 1800», «профит», «реклама», «история», «сколько сделок».","bot");
+setPrice();tTot();render();show("Калькулятор");
+</script></body></html>
