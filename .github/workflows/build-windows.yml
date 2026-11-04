@@ -1,0 +1,41 @@
+
+name: Build STALCRAFT BUY for Windows
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build EXE
+        shell: pwsh
+        run: |
+          if (Test-Path "package.json") {
+            $dir = "."
+          } elseif (Test-Path "stalcraft-buy-app/package.json") {
+            $dir = "stalcraft-buy-app"
+          } else {
+            throw "package.json not found"
+          }
+          Set-Location $dir
+          npm install
+          npm run dist:win
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: STALCRAFT-BUY-EXE
+          path: |
+            dist/*
+            stalcraft-buy-app/dist/*
+          if-no-files-found: error
